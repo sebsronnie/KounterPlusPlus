@@ -1,0 +1,186 @@
+# =============================================================================
+#  KounterPlusPlus  |  Coding Camp II  -  Project 3
+#  Team Foxtrot: Ronald Sebuhinja, Kelvin Maritim
+#  C++ / openFrameworks 0.12.1 / OpenCV  -  Xcode on macOS
+#
+#  Committed on purpose, so that Prof. Tom can open and build the
+#  project straight from the clone:
+#    addons.make, README.md, src/, docs/, tests/, bin/data/
+#    the generated Xcode project: KounterPlusPlus.xcodeproj, Project.xcconfig,
+#    openFrameworks-Info.plist, of.entitlements, config.make, Makefile
+#  Everything below is either build output, IDE user state, OS noise, or
+#  something else the application writes while it runs.
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# 1. Build output
+# -----------------------------------------------------------------------------
+# openFrameworks drops the built binary and the .app bundle into bin/, but
+# bin/data holds the sample images and videos the app loads, so bin/data stays.
+bin/*
+!bin/data/
+
+obj/
+build/
+Build/
+DerivedData/
+*.o
+*.d
+*.a
+*.lo
+*.slo
+*.la
+*.dylib
+*.so
+*.so.*
+*.dll
+*.exe
+*.app/
+*.dSYM/
+*.gch
+*.pch
+
+# -----------------------------------------------------------------------------
+# 2. Xcode (the IDE we build with on the Mac)
+# -----------------------------------------------------------------------------
+# The .xcodeproj itself is committed; only the per-user state inside it is not.
+xcuserdata/
+*.xcuserstate
+*.xcworkspace/xcuserdata/
+*.xcodeproj/project.xcworkspace/xcuserdata/
+*.xcodeproj/xcuserdata/
+*.xcscmblueprint
+*.xccheckout
+*.moved-aside
+*.perspectivev3
+*.pbxuser
+*.mode1v3
+*.mode2v3
+timeline.xctimeline
+playground.xcworkspace
+
+# -----------------------------------------------------------------------------
+# 3. Visual Studio (Windows)
+# -----------------------------------------------------------------------------
+# We generate the VS project locally rather than committing it, so that two
+# IDEs never rewrite each other's project files.
+*.sln
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+*.user
+*.suo
+*.sdf
+*.opensdf
+*.VC.db
+*.VC.opendb
+*.aps
+*.idb
+*.pdb
+*.ilk
+*.tlog
+.vs/
+ipch/
+Debug/
+Release/
+x64/
+Win32/
+
+# -----------------------------------------------------------------------------
+# 4. Makefile and CMake builds (Linux, or a command-line build of tests/)
+# -----------------------------------------------------------------------------
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+cmake-build-*/
+compile_commands.json
+*.make.user
+
+# tests/vision_cli.cpp is built by hand outside the openFrameworks project;
+# ignore whatever name the harness binary ends up with.
+tests/vision_cli
+tests/build/
+tests/*.out
+
+# -----------------------------------------------------------------------------
+# 5. Python helper (tests/make_test_images.py)
+# -----------------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+.python-version
+
+# -----------------------------------------------------------------------------
+# 6. What the application writes at run time
+# -----------------------------------------------------------------------------
+# The bundled samples in bin/data are committed; anything the app saves there
+# while running is not, or the repository fills up with screenshots and CSVs.
+bin/data/settings.xml
+bin/data/screenshot_*.png
+bin/data/objects_*.csv
+bin/data/export_*.csv
+bin/data/logs/
+bin/data/*.log
+bin/data/out/
+
+# Personal test footage: keep the repository small. If a photo or clip is part
+# of the test plan, commit it deliberately with `git add -f`.
+bin/data/images/private_*
+bin/data/videos/private_*
+*.mov
+*.avi
+*.mkv
+!bin/data/videos/sample_*.mp4
+
+# -----------------------------------------------------------------------------
+# 7. openFrameworks and OpenCV, if anyone copies them into the tree
+# -----------------------------------------------------------------------------
+# We build against openFrameworks at ~/openFrameworks and against the OpenCV
+# that ships with ofxOpenCv. Neither belongs inside this repository.
+openFrameworks/
+of_v*/
+addons/ofx*/
+!addons.make
+opencv/
+opencv_contrib/
+third_party/
+vendor/
+*.framework/
+
+# -----------------------------------------------------------------------------
+# 8. Editors and OS noise
+# -----------------------------------------------------------------------------
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.clangd/
+.cache/
+
+.DS_Store
+.DS_Store?
+._*
+.AppleDouble
+.LSOverride
+.Spotlight-V100
+.Trashes
+Icon?
+
+Thumbs.db
+ehthumbs.db
+desktop.ini
+$RECYCLE.BIN/
+
+# -----------------------------------------------------------------------------
+# 9. Documentation working files
+# -----------------------------------------------------------------------------
+# draw.io keeps an autosave backup beside each diagram while a file is open.
+.$*.drawio.bkp
+*.drawio.dtmp
+~$*.docx
+~$*.pptx
+~$*.xlsx
+
