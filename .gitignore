@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # =============================================================================
 #  KounterPlusPlus  |  Coding Camp II  -  Project 3
 #  Team Foxtrot: Ronald Sebuhinja, Kelvin Maritim
@@ -133,6 +134,7 @@ bin/data/videos/private_*
 *.avi
 *.mkv
 !bin/data/videos/sample_*.mp4
+docs/
 
 # -----------------------------------------------------------------------------
 # 7. openFrameworks and OpenCV, if anyone copies them into the tree
@@ -184,3 +186,6 @@ $RECYCLE.BIN/
 ~$*.pptx
 ~$*.xlsx
 
+=======
+docs/
+>>>>>>> origin/KMaritim
