@@ -44,6 +44,7 @@ private:
 	void handleImageClick(int ix, int iy);
 	void finishTeaching();
 	void cancelTeaching();
+	void resetSettings();
 
 	// --- utilities ---
 	void saveScreenshot();

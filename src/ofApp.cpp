@@ -2,7 +2,7 @@
 //  Kounter++  |  Coding Camp II  -  Project 3
 //  Team Foxtrot: Ronald Sebuhinja, Kelvin Maritim
 //  File:    ofApp.cpp
-//  Author:  Ronald Sebuhinja (shared file: change only by agreement)
+//  Author:  Ronald K. Sebuhinja (shared file: change only by agreement)
 //  Purpose: Event wiring between GUI, sources, vision pipeline and overlay.
 // -----------------------------------------------------------------------------
 #include "ofApp.h"
@@ -163,12 +163,22 @@ void ofApp::handleImageClick(int ix, int iy) {
 		typing = true;
 		return;
 	}
+	
 	if (settings.mode == SegmentationMode::ColourPick && !frame.empty()) {
 		detector.pickSeedColour(frame, cv::Point(ix, iy), settings);
 		lastSettings = settings;                // the pick is not a slider change
 		needsRun = true;
 		say("Colour picked - adjust 'Colour tolerance'");
 	}
+	
+	const DetectedObject* o = ObjectDetector::objectAt(result, cv::Point(ix, iy));
+	if (!o) { say("No object clicked"); return; }
+	
+	say("area " + ofToString(int(o->area)) + " px"
+		+ "   round " + ofToString(o->circularity, 2)
+		+ "   aspect " + ofToString(o->aspectRatio, 2)
+		+ "   solid " + ofToString(o->solidity, 2)
+		+ (o->label.empty() ? "" : "   " + o->label));
 }
 
 void ofApp::finishTeaching() {
@@ -185,6 +195,13 @@ void ofApp::cancelTeaching() {
 	typing = false;
 	labelBuffer.clear();
 	teachObjectIndex = -1;
+}
+
+void ofApp::resetSettings() {
+	settings = DetectionSettings();
+	lastSettings = settings;
+	needsRun = true;
+	say("Reset settings to defaults");
 }
 
 void ofApp::keyPressed(int key) {
@@ -214,6 +231,7 @@ void ofApp::keyPressed(int key) {
 		case 's': case 'S': saveScreenshot(); break;
 		case 'e': case 'E': exportCsv(); break;
 		case 'h': case 'H': showHelp = !showHelp; break;
+		case 'd': case 'D': resetSettings(); break;
 		case ' ': {
 			auto* v = dynamic_cast<VideoFileSource*>(source.get());
 			if (v) v->togglePause();
