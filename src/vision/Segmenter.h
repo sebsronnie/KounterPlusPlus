@@ -59,6 +59,18 @@ public:
 	std::string name() const override { return "Colour pick"; }
 };
 
+// Fifth option aimed at fixing the AutoOtsu  issue with inappropriate threshold
+// Otsu draws ONE line through the histogram. A scene with a bright background,
+// bright objects and dark objects has three populations, so two of them always
+// land on the same side of that line. This strategy asks a different question:
+// not "is this pixel dark?" but "is this pixel unlike the background?".
+class BackgroundRemoveStrategy : public SegmentationStrategy {
+public:
+	void apply(const cv::Mat& gray, const cv::Mat& hsv, const DetectionSettings& s, cv::Mat& mask) const override;
+	SegmentationMode mode() const override { return SegmentationMode::BackgroundRemove; }
+	std::string name() const override { return "Background removal"; }
+};
+
 // The Segmenter composes the strategies and the clean-up steps.
 class Segmenter {
 public:

@@ -5,6 +5,7 @@
 //  Author:  Kelvin Maritim
 //  Purpose: Drawing of results and HUD.
 // ---------------------------------------------------------------------------
+#include <algorithm>
 #include "ResultOverlay.h"
 
 void ResultOverlay::setup() {
@@ -151,17 +152,25 @@ void ResultOverlay::drawHelp() {
 	const std::vector<std::string> lines = {
 		"Keys",
 		"O  open image        C  camera        V  open video",
-		"1-4  mode: Otsu / manual / adaptive / colour pick",
+		"1-5  mode: Otsu / manual / adaptive / colour pick / background removal",
 		"Left click (colour pick mode)  choose the colour to select",
 		"T  teach mode on/off   then click an object and type a name",
 		"G  grayscale on/off    I  invert       X  split touching on/off",
 		"Tab  view: original / mask / overlay",
-		"R  reset video counter   S  screenshot    E  export CSV",
-		"Space  pause video    H  this help    Esc  cancel typing",
+		"R  reset video counter   S  screenshot   E  export CSV",
+		"Space  pause video       H  this help   Esc  cancel typing",
 		"Drag and drop an image or video onto the window to open it."
 	};
-	const float w = 520, h = 18.0f * lines.size() + 20.0f;
+
+	// Changed the box to follow its longest line, so adding a mode can never push text
+	// past the edge. Clamped to the viewport in case the window is narrow.
+	// Added as part of the 5th mode/strategy addition work
+	float textW = 0.0f;
+	for (const auto& l : lines) textW = std::max(textW, textWidth(l));
+	const float w = std::min(textW + 24.0f, viewport.width - 32.0f);
+	const float h = 18.0f * lines.size() + 20.0f;
 	const float x = viewport.getRight() - w - 16, y = viewport.y + 16;
+
 	ofSetColor(0, 200);
 	ofDrawRectangle(x, y, w, h);
 	ofSetColor(255);

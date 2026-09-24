@@ -14,7 +14,8 @@ enum class SegmentationMode {
 	AutoOtsu = 0,     // Otsu picks the threshold automatically
 	ManualThreshold,  // user picks the threshold with a slider
 	Adaptive,         // threshold adapts to local brightness (uneven lighting)
-	ColourPick        // user clicks a colour, tolerance slider decides how similar is "same"
+	ColourPick,        // user clicks a colour, tolerance slider decides how similar is "same"
+	BackgroundRemove   // anything unlike the background colour is an object (fifth approach)
 };
 
 struct DetectionSettings {
@@ -33,7 +34,7 @@ struct DetectionSettings {
 	float seedHue           = 0.0f;   // OpenCV hue range 0..180
 	float seedSaturation    = 0.0f;   // 0..255
 	float seedValue         = 0.0f;   // 0..255
-	float tolerance         = 35.0f;  // 0..100, like Photoshop's tolerance
+	float tolerance         = 35.0f;  // 0..100, modes 3 and 4: how similar counts as "same"
 
 	// --- clean-up of the mask ---
 	int   blurSize          = 5;      // odd number, 1 = no blur

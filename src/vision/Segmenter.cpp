@@ -98,6 +98,7 @@ Segmenter::Segmenter() {
 	strategies.push_back(std::make_unique<ManualThresholdStrategy>());
 	strategies.push_back(std::make_unique<AdaptiveStrategy>());
 	strategies.push_back(std::make_unique<ColourPickStrategy>());
+	strategies.push_back(std::make_unique<BackgroundRemoveStrategy>());
 }
 
 const SegmentationStrategy& Segmenter::strategyFor(SegmentationMode m) const {
@@ -187,3 +188,78 @@ void Segmenter::splitTouching(cv::Mat& mask, const cv::Mat& rgb, const Detection
 	mask.setTo(0, boundary);
 }
 
+
+namespace {
+
+// Median colour of a band around the edge of the frame. Median rather than mean
+// so that an object touching the border cannot drag the estimate.
+void borderColour(const cv::Mat& img, int band, std::vector<float>& out) {
+	const int w = img.cols, h = img.rows, ch = img.channels();
+	band = std::max(1, std::min(band, std::min(w, h) / 4));
+	std::vector<std::vector<unsigned char>> samples(ch);
+	for (int y = 0; y < h; ++y) {
+		const bool edgeRow = (y < band || y >= h - band);
+		for (int x = 0; x < w; ++x) {
+			if (!edgeRow && x >= band && x < w - band) continue;
+			const unsigned char* p = img.ptr<unsigned char>(y) + x * ch;
+			for (int c = 0; c < ch; ++c) samples[c].push_back(p[c]);
+		}
+	}
+	out.assign(ch, 0.0f);
+	for (int c = 0; c < ch; ++c) {
+		auto& v = samples[c];
+		if (v.empty()) continue;
+		std::nth_element(v.begin(), v.begin() + v.size() / 2, v.end());
+		out[c] = float(v[v.size() / 2]);
+	}
+}
+
+} // namespace
+
+void BackgroundRemoveStrategy::apply(const cv::Mat& gray, const cv::Mat& hsv,
+									 const DetectionSettings& s, cv::Mat& mask) const {
+	const float maxDist = std::max(0.01f, s.tolerance / 100.0f);
+	const int   band    = std::max(2, gray.cols / 64);
+
+	if (hsv.empty()) {
+		// Grayscale input: "unlike the background" can only mean "different brightness".
+		std::vector<float> bg;
+		borderColour(gray, band, bg);
+		cv::Mat diff;
+		cv::absdiff(gray, cv::Scalar(bg[0]), diff);
+		cv::threshold(diff, mask, maxDist * 255.0, 255, cv::THRESH_BINARY);
+		return;
+	}
+
+	std::vector<float> bg;                       // hue, saturation, value of the border
+	borderColour(hsv, band, bg);
+
+	std::vector<cv::Mat> ch;
+	cv::split(hsv, ch);
+	cv::Mat h, sat, val;
+	ch[0].convertTo(h,   CV_32F);
+	ch[1].convertTo(sat, CV_32F, 1.0 / 255.0);
+	ch[2].convertTo(val, CV_32F, 1.0 / 255.0);
+
+	cv::Mat dh;
+	cv::absdiff(h, cv::Scalar(bg[0]), dh);
+	dh = cv::min(dh, 180.0f - dh);               // hue is circular
+	dh /= 90.0f;
+
+	cv::Mat ds, dv;
+	cv::absdiff(sat, cv::Scalar(bg[1] / 255.0f), ds);
+	cv::absdiff(val, cv::Scalar(bg[2] / 255.0f), dv);
+
+	// A white, grey or black background has no meaningful hue of its own, so hue
+	// only counts in proportion to how colourful the background actually is.
+	// Saturation carries most of the weight: on a plain backdrop, "colourful at
+	// all" is the most reliable sign that a pixel belongs to an object.
+	const float bgSat = std::min(1.0f, bg[1] / 80.0f);
+	const float wH = 1.0f * bgSat, wS = 1.0f, wV = 0.8f;
+
+	cv::Mat dist;
+	cv::sqrt(wH * dh.mul(dh) + wS * ds.mul(ds) + wV * dv.mul(dv), dist);
+
+	cv::Mat away = dist > maxDist;               // FAR from the background = object
+	away.copyTo(mask);
+}

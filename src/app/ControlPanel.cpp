@@ -43,6 +43,8 @@ void ControlPanel::setup(float x, float y) {
 	segmentation.add(adaptiveBlockSize.set("Adaptive block", d.adaptiveBlockSize, 3, 151));
 	segmentation.add(adaptiveOffset.set("Adaptive offset", d.adaptiveOffset, -30, 30));
 	segmentation.add(tolerance.set("Colour tolerance", d.tolerance, 0.0f, 100.0f));
+	segmentation.add(mode.set("Mode 0-4 (keys 1-5)", int(d.mode), 0, 4));
+	segmentation.add(tolerance.set("Tolerance (modes 3,4)", d.tolerance, 0.0f, 100.0f));
 
 	cleanup.setName("Clean-up");
 	cleanup.add(blurSize.set("Blur", d.blurSize, 1, 21));

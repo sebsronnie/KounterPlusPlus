@@ -222,6 +222,7 @@ void ofApp::keyPressed(int key) {
 		case '2': settings.mode = SegmentationMode::ManualThreshold; break;
 		case '3': settings.mode = SegmentationMode::Adaptive;        break;
 		case '4': settings.mode = SegmentationMode::ColourPick;      break;
+		case '5': settings.mode = SegmentationMode::BackgroundRemove; break;
 		case 'g': case 'G': settings.forceGrayscale = !settings.forceGrayscale; break;
 		case 'i': case 'I': settings.invert = !settings.invert; break;
 		case 'x': case 'X': settings.splitTouching = !settings.splitTouching; break;
