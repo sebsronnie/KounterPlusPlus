@@ -50,8 +50,4 @@ Sample images and a sample video are in `bin/data/images` and `bin/data/videos`.
 src/vision    the OpenCV pipeline (no openFrameworks dependency)
 src/sources   image, camera and video sources
 src/app       control panel, overlay drawing, oF <-> OpenCV bridge
-docs          requirements, design, plan, test plan, decision log, AI log, posts
-tests         command-line harness for the vision core (not part of the app build)
 ```
-
-The documents in `docs/` describe the architecture, the class relationships and the memory model in detail.
